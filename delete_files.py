@@ -14,6 +14,16 @@ def get_extensions(folder_path: str) -> set:
                 extensions.add(ext)
     return sorted(extensions)
 
+def get_count_extensions(folder_path: str) -> list:
+    extensions = get_extensions(folder_path)
+
+    extensions_count = {}
+
+    for ext in extensions:
+        count = len(list(Path(folder_path).rglob(f"*{ext}")))
+        extensions_count[ext] = count
+    return extensions_count
+
 def prompt_extensions_to_delete(extensions: set) -> set:
     print("Available file extensions:")
     for ext in extensions:
