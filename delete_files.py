@@ -52,7 +52,7 @@ def delete_files(folder_path: str, extensions: set) -> None:
         for file in folder_path.rglob(f"*{ext}"):
             if file.is_file():
                 try:
-                    # file.unlink()
+                    file.unlink()
                     print(f"Deleted: {file.name}")
                 except Exception as e:
                     print(f"Error Deleting {file} : {e}")

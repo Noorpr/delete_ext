@@ -19,7 +19,7 @@ class App(ctk.CTk):
         self.geometry("500x600")
         self.resizable(False, False)
         self.extensions_checkboxes = dict()
-        self.folder_path = None
+        self.folder_path = ""
 
         self.create_widgets()
 
@@ -36,15 +36,13 @@ class App(ctk.CTk):
         self.scroll_frame = ctk.CTkScrollableFrame(self, width=400, height=300)
         self.scroll_frame.pack(pady=20, padx=20, fill="both", expand=True)
 
+        self.btn_delete = ctk.CTkButton(self, text="Delete Selected Files", command=self.delete_selected_files)
+        self.btn_delete.pack(pady=10)
 
     def select_folder(self):
         self.folder_path = ctk.filedialog.askdirectory(title="Select Folder")
         if not self.folder_path:
             messagebox.showerror("Error", "No folder selected.", icon="error", detail="Please select a folder.", font=NORMAL_FONT)
-            return
-        extensions = get_extensions(self.folder_path)
-        if not extensions:
-            messagebox.showinfo("Info", "No files found in the specified folder.", icon="info", detail="No files found.", font=NORMAL_FONT)
             return
         self.label_folder.configure(text=f"Selected folder: {self.folder_path}")
         self.populate_extensions()
@@ -58,32 +56,31 @@ class App(ctk.CTk):
         extensions = get_extensions(self.label_folder.cget("text").split(": ")[1])
         count_extensions = get_count_extensions(self.label_folder.cget("text").split(": ")[1])
         for ext in extensions:
-            var = ctk.StringVar(value=ext)
+            var = ctk.BooleanVar()
             count = count_extensions[ext]
             full_var_text = f"{ext} ({count})"
             
             checkbox = ctk.CTkCheckBox(self.scroll_frame, text=full_var_text, variable=var)
             checkbox.pack(anchor="w")
             self.extensions_checkboxes[ext] = var
-        self.delete_selected_files(self.folder_path)
         
-    def delete_selected_files(self, folder_path):
+    def delete_selected_files(self):
+        if not self.folder_path:
+            messagebox.showerror("Error", "No files have been selected asshole")
         selected_files = {ext for ext, var in self.extensions_checkboxes.items() if var.get()}
         if not selected_files:
             messagebox.showerror("Error", "No extensions selected.", icon="error", detail="Please select at least one extension.")
-            return
             
-        
-        self.delete_btn = ctk.CTkButton(self.scroll_frame, text="Delete Selected Files", command=lambda: delete_files(self.folder_path, selected_files))
-        self.delete_btn.pack(pady=10)
+        print(selected_files)
 
         confirm = messagebox.askyesno("Info", "Are you sure you want to delete these files?")
         if not confirm:
+            messagebox.showinfo("Info", "Operation cancelled.", icon="info", detail="No files deleted.")
             return
-        
+        delete_files(self.folder_path, selected_files)
         self.populate_extensions()
-    
-        messagebox.showinfo("Info", "Operation cancelled.", icon="info", detail="No files deleted.")
+        messagebox.showinfo("Info", "Operation ended sucessfully, your files have been deleted, don't check your recycily bin it's gone for good",)
+        
             
 
 

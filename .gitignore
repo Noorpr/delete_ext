@@ -1,1 +1,4 @@
-__pycahce__
+__pycache__
+dist
+build
+*.spec
